@@ -1,3 +1,8 @@
+<p align="center">
+  <br />
+  <img src="https://raw.githubusercontent.com/mannynotfound/crying-jordan/master/crying-jordan.jpg" />
+</p>
+
 # crying-jordan.io
 
 The streets need this
@@ -5,6 +10,11 @@ The streets need this
 ## inspo:
 
 * [Switching Faces With Python](http://matthewearl.github.io/2015/07/28/switching-eds-with-python/)
+
+## todos:
+
+* understand the code
+* detect face in the wrong direction and automatically mirror horizontally
 
 _note:_
 
