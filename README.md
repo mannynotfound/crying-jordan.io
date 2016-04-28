@@ -8,5 +8,5 @@ The streets need this
 
 _note:_
 
-you will need a `landmarks/` directory with the extracted .dat from (this download)[http://sourceforge.net/projects/dclib/files/dlib/v18.10/shape_predictor_68_face_landmarks.dat.bz2]
+you will need a `landmarks/` directory with the extracted .dat from [this download](http://sourceforge.net/projects/dclib/files/dlib/v18.10/shape_predictor_68_face_landmarks.dat.bz2)
 
