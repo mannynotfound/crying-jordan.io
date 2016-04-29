@@ -14,14 +14,16 @@ userid = os.environ['USERID']
 # only statuses that are replies with photos
 def check_valid_status(status):
     if status["in_reply_to_user_id_str"] == userid:
-        try:
+        media = status.get("extended_entities", {}).get("media", None)
+
+        if media is not None:
             valid = False
-            for m in status["extended_entities"]["media"]:
+            for m in media:
                 if m["type"] == "photo":
                     valid = True
 
             return valid
-        except AttributeError:
+        else:
             return False
     else:
         return False
@@ -32,12 +34,12 @@ class listener(StreamListener):
 
     def on_data(self, data):
         data = json.loads(data)
-        if check_valid_status(data) == True:
+        if check_valid_status(data):
             print "is mention"
         else:
             print "nah b"
 
-        return(True)
+        return True
 
     def on_error(self, status):
         print status
