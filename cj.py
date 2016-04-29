@@ -133,20 +133,24 @@ def correct_colours(im1, im2, landmarks1):
                                             im2_blur.astype(numpy.float64))
 
 
-im1, landmarks1 = read_im_and_landmarks(sys.argv[1])
-im2, landmarks2 = read_im_and_landmarks(sys.argv[2])
+def process(image1, image2):
+    im1, landmarks1 = read_im_and_landmarks(image1)
+    im2, landmarks2 = read_im_and_landmarks(image2)
 
-M = transformation_from_points(landmarks1[ALIGN_POINTS],
-                               landmarks2[ALIGN_POINTS])
+    M = transformation_from_points(landmarks1[ALIGN_POINTS],
+                                   landmarks2[ALIGN_POINTS])
 
-mask = get_face_mask(im2, landmarks2)
-warped_mask = warp_im(mask, M, im1.shape)
-combined_mask = numpy.max([get_face_mask(im1, landmarks1), warped_mask], axis=0)
+    mask = get_face_mask(im2, landmarks2)
+    warped_mask = warp_im(mask, M, im1.shape)
+    combined_mask = numpy.max([get_face_mask(im1, landmarks1), warped_mask], axis=0)
 
-warped_im2 = warp_im(im2, M, im1.shape)
-warped_corrected_im2 = correct_colours(im1, warped_im2, landmarks1)
+    warped_im2 = warp_im(im2, M, im1.shape)
+    warped_corrected_im2 = correct_colours(im1, warped_im2, landmarks1)
 
-output_im = im1 * (1.0 - combined_mask) + warped_corrected_im2 * combined_mask
-output_str = './output/' + time.strftime("%Y%m%d-%H%M%S") + '.jpg'
+    output_im = im1 * (1.0 - combined_mask) + warped_corrected_im2 * combined_mask
+    output_str = './output/' + time.strftime("%Y%m%d-%H%M%S") + '.jpg'
 
-cv2.imwrite(output_str, output_im)
+    cv2.imwrite(output_str, output_im)
+
+    print 'processed image!'
+    return output_str
