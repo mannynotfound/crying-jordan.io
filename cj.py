@@ -44,9 +44,11 @@ def get_landmarks(im):
     rects = detector(im, 1)
 
     if len(rects) > 1:
+        print ' TOO MANY FACES'
         return False
         # raise TooManyFaces
     elif len(rects) == 0:
+        print 'NO FACES '
         return False
         # raise NoFaces
     else:
@@ -139,7 +141,8 @@ def process(image1, image2):
     im1, landmarks1 = read_im_and_landmarks(image1)
     im2, landmarks2 = read_im_and_landmarks(image2)
 
-    if not landmarks1 or not landmarks2:
+    if type(landmarks1) == bool or type(landmarks2) == bool:
+        print 'failed to process faces :('
         return False
     else:
         M = transformation_from_points(landmarks1[ALIGN_POINTS],
