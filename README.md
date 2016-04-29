@@ -13,13 +13,13 @@ The streets need this
 
 ## usage
 
-### crying jordan
+#### crying jordan
 
 To get an automated crying jordan, simply tweet an image with a suitable face.
 
 `@username [image]`
 
-### face swap
+#### face swap
 
 To perform face swap between a base image and a source image, tweet as such:
 

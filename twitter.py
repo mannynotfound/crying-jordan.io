@@ -1,6 +1,7 @@
 import os
 import json
 import urllib
+import time
 from tweepy import API
 from tweepy import Stream
 from tweepy import OAuthHandler
@@ -54,14 +55,14 @@ def download_images(status):
 
 # only statuses that are replies with photos
 def check_valid_status(status):
-    is_reply = status.get("in_reply_to_user_id_str", False)
+    reply = status.get("in_reply_to_user_id_str", False)
 
-    if not is_reply:
+    if not reply or reply != userid:
         return False
-    elif status["in_reply_to_user_id_str"] == userid:
-        media = status.get("extended_entities", {}).get("media", None)
+    else:
+        media = status.get("extended_entities", {}).get("media", False)
 
-        if media is not None:
+        if media:
             valid = False
             for m in media:
                 if m["type"] == "photo":
@@ -70,8 +71,16 @@ def check_valid_status(status):
             return valid
         else:
             return False
-    else:
-        return False
+
+
+def reply_with_fail(status):
+    text = "@" + status["user"]["screen_name"]
+    text += ' could not process your image :( '
+    text += time.strftime("%Y%m%d-%H%M%S")
+
+    twitter_api.update_status(text, in_reply_to_status_id = status["id"])
+    print 'replied with fail! :('
+
 
 def reply_with_image(status, image):
     text = "@" + status["user"]["screen_name"]
@@ -88,7 +97,10 @@ class listener(StreamListener):
             images = download_images(status)
             if (len(images) > 0):
                 final_image = process_images(images)
-                reply_with_image(status, final_image)
+                if final_image:
+                    reply_with_image(status, final_image)
+                else:
+                    reply_with_fail(status)
             else:
                 print 'couldnt download images :('
 
