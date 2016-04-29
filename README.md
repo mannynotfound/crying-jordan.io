@@ -11,6 +11,18 @@ The streets need this
 
 * [Switching Faces With Python](http://matthewearl.github.io/2015/07/28/switching-eds-with-python/)
 
+## environment variables
+
+you'll need these system environment variables 
+
+Variable | Description
+:------- | :----------
+CKEY | Twitter consumer token
+CSECRET | Twitter consumer token secret
+ATOKEN | Twitter access token
+ASECRET | Twitter access token secret
+USERID | Twitter user id to track mentions
+
 ## todos:
 
 * understand the code
