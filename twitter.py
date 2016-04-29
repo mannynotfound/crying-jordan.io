@@ -1,24 +1,38 @@
 import os
+import json
 from tweepy import Stream
 from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
 
+# globals
 ckey = os.environ['CKEY']
 csecret = os.environ['CSECRET']
 atoken = os.environ['ATOKEN']
 asecret = os.environ['ASECRET']
 userid = os.environ['USERID']
 
-def check_is_mention(status):
-    return status.in_reply_to_user_id_str == userid
+# only statuses that are replies with photos
+def check_valid_status(status):
+    if status["in_reply_to_user_id_str"] == userid:
+        try:
+            valid = False
+            for m in status["extended_entities"]["media"]:
+                if m["type"] == "photo":
+                    valid = True
 
+            return valid
+        except AttributeError:
+            return False
+    else:
+        return False
+
+
+# stream listener
 class listener(StreamListener):
 
-    def on_status(self, status):
-        print status
-        print "--------------"
-
-        if check_is_mention(status) == True:
+    def on_data(self, data):
+        data = json.loads(data)
+        if check_valid_status(data) == True:
             print "is mention"
         else:
             print "nah b"
