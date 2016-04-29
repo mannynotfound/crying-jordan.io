@@ -54,7 +54,11 @@ def download_images(status):
 
 # only statuses that are replies with photos
 def check_valid_status(status):
-    if status["in_reply_to_user_id_str"] == userid:
+    is_reply = status.get("in_reply_to_user_id_str", False)
+
+    if not is_reply:
+        return False
+    elif status["in_reply_to_user_id_str"] == userid:
         media = status.get("extended_entities", {}).get("media", None)
 
         if media is not None:

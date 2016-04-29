@@ -7,9 +7,25 @@
 
 The streets need this
 
-## inspo:
+## inspo
 
 * [Switching Faces With Python](http://matthewearl.github.io/2015/07/28/switching-eds-with-python/)
+
+## usage
+
+### crying jordan
+
+To get an automated crying jordan, simply tweet an image with a suitable face.
+
+`@username [image]`
+
+### face swap
+
+To perform face swap between a base image and a source image, tweet as such:
+
+`@username [base image] [source image]`
+
+This will impose the face from the source image onto the base image.
 
 ## environment variables
 
@@ -25,7 +41,7 @@ USERID | Twitter user id to track mentions
 
 ## todos:
 
-* understand the code
+* understand face swap code
 * detect face in the wrong direction and automatically mirror horizontally
 
 _note:_
