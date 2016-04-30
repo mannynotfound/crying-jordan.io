@@ -2,10 +2,7 @@ import os
 import json
 import urllib
 import time
-from tweepy import API
-from tweepy import Stream
-from tweepy import OAuthHandler
-from tweepy.streaming import StreamListener
+import tweepy
 from cj import process
 
 # globals
@@ -15,9 +12,9 @@ atoken = os.environ['ATOKEN']
 asecret = os.environ['ASECRET']
 userid = os.environ['USERID']
 
-auth = OAuthHandler(ckey, csecret)
+auth = tweepy.OAuthHandler(ckey, csecret)
 auth.set_access_token(atoken, asecret)
-twitter_api = API(auth)
+twitter_api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
 def process_images(images):
     if len(images) == 1:
@@ -53,24 +50,47 @@ def download_images(status):
     return image_links
 
 
-# only statuses that are replies with photos
-def check_valid_status(status):
-    reply = status.get("in_reply_to_user_id_str", False)
+# check if tweet has photos
+def has_pics(status):
+    media = status.get("extended_entities", {}).get("media", False)
 
-    if not reply or reply != userid:
+    if media:
+        valid = False
+        for m in media:
+            if m["type"] == "photo":
+                valid = True
+
+        return valid
+    else:
+        return False
+
+
+# only statuses that are replies with photos
+def check_mention(status):
+    reply = status.get("in_reply_to_user_id_str", False)
+    return reply == userid
+
+
+# only cc's that originate from a photo post
+def check_quote(status):
+    quote = status.get("quoted_status_id", False)
+
+    if not quote:
+        return status
+    else:
+        return twitter_api.statuses_lookup([quote], include_entities = True)[0]
+
+
+# check if is mention or a mention with quote
+# if quote, use the quoted status as the status going forward
+def check_valid_status(status):
+    mention = check_mention(status)
+
+    if not mention:
         return False
     else:
-        media = status.get("extended_entities", {}).get("media", False)
-
-        if media:
-            valid = False
-            for m in media:
-                if m["type"] == "photo":
-                    valid = True
-
-            return valid
-        else:
-            return False
+        status = check_quote(status)
+        return status if has_pics(status) else False
 
 
 def reply_with_fail(status):
@@ -89,20 +109,27 @@ def reply_with_image(status, image):
 
 
 # stream listener
-class listener(StreamListener):
+class listener(tweepy.StreamListener):
 
     def on_data(self, data):
         status = json.loads(data)
-        if check_valid_status(status):
-            images = download_images(status)
-            if (len(images) > 0):
+        print status
+        print '------------------------'
+        print ''
+        valid_status = check_valid_status(status)
+
+        if valid_status:
+            images = download_images(valid_status)
+            if (len(images)):
                 final_image = process_images(images)
                 if final_image:
-                    reply_with_image(status, final_image)
+                    reply_with_image(valid_status, final_image)
                 else:
-                    reply_with_fail(status)
+                    reply_with_fail(valid_status)
             else:
                 print 'couldnt download images :('
+        else:
+            print 'ignoring stream event'
 
         return True
 
@@ -113,5 +140,5 @@ class listener(StreamListener):
             return False
 
 
-twitterStream = Stream(auth, listener())
+twitterStream = tweepy.Stream(auth, listener())
 twitterStream.filter(follow=[userid])
