@@ -19,6 +19,11 @@ To get an automated crying jordan, simply tweet an image with a suitable face.
 
 `@username [image]`
 
+
+Additionally, you can tweet a quoted status that contains images.
+
+`@username [link to tweet]`
+
 #### face swap
 
 To perform face swap between a base image and a source image, tweet as such:
