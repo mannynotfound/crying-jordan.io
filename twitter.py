@@ -16,6 +16,10 @@ auth = tweepy.OAuthHandler(ckey, csecret)
 auth.set_access_token(atoken, asecret)
 twitter_api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
+def print_break():
+    print '------------------------'
+    print ''
+
 def process_images(images):
     if len(images) == 1:
         images.append('./assets/jordan.png')
@@ -108,28 +112,42 @@ def reply_with_image(status, image):
     print 'replied with image!'
 
 
+def clean_up(images):
+    for image in images:
+        print 'removing ' + image
+        os.remove(image)
+
+    print 'done cleaning up!'
+    print_break()
+
+
 # stream listener
 class listener(tweepy.StreamListener):
 
     def on_data(self, data):
         status = json.loads(data)
         print status
-        print '------------------------'
         print ''
         valid_status = check_valid_status(status)
 
         if valid_status:
             images = download_images(valid_status)
+            print images
+            print type(images)
             if (len(images)):
-                final_image = process_images(images)
+                final_image = process_images(list(images))
                 if final_image:
                     reply_with_image(valid_status, final_image)
+                    images.append(final_image)
+                    clean_up(images)
                 else:
                     reply_with_fail(valid_status)
+                    clean_up(images)
             else:
                 print 'couldnt download images :('
         else:
             print 'ignoring stream event'
+            print_break()
 
         return True
 
