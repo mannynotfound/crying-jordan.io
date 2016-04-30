@@ -17,6 +17,7 @@ auth.set_access_token(atoken, asecret)
 twitter_api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
 def print_break():
+    print ''
     print '------------------------'
     print ''
 
